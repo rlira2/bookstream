@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>BookStream</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="viewport" content="initial-scale = 1.0,maximum-scale = 1.0" />
+  <link rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css">
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.0/jquery.min.js"></script>
+  <script src="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
+  <%= stylesheet_link_tag    'application', media: 'all', 'data-turbolinks-track' => true %>
+  <%= javascript_include_tag 'application', 'data-turbolinks-track' => true %>
+  <%= csrf_meta_tags %>
+  <%= favicon_link_tag 'favicon.ico' %>
+</head>
+<body>
+<%= favicon_link_tag %>
+<% url = request.original_url %>
+
+<nav class="navbar navbar-inverse navbar-fixed-top">
+  <div class="container-fluid">
+
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#myNavbar">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="../">
+        <span class="glyphicon glyphicon-bookmark"></span> BookStream
+      </a>
+    </div>
+
+    <div class="collapse navbar-collapse" id="myNavbar">
+      <ul class="nav navbar-nav">
+        <% if user_signed_in? %>
+          <% if current_user.email != 'bookstreammailer@gmail.com' %>
+            <li><a href="/home"><span class="glyphicon glyphicon-home"></span> Home</a></li>
+          <% else %>
+            <li><a href="/adm_users"><span class="glyphicon glyphicon-wrench"></span> Users</a></li>
+            <li><a href="/home"><span class="glyphicon glyphicon-wrench"></span> Books</a></li>
+            <li><a href="/tags"><span class="glyphicon glyphicon-wrench"></span> Tags</a></li>
+          <% end %>
+          </ul>
+          <% if url.include? ('home') %>
+            <form class="navbar-form navbar-left" accept-charset="UTF-8" action="/home" method="get">
+              <div class="input-group">
+                <input type="text" name="search" id="search" class="form-control" placeholder="Search">
+                <span class="input-group-btn">
+                  <button type="submit" class="btn btn-default"><span class="glyphicon glyphicon-search"></span></button>
+                </span>
+              </div>
+            </form>
+          <% end %>
+          <% if url.include? ('publiclib') %>
+            <form class="navbar-form navbar-left" accept-charset="UTF-8" action="/publiclib" method="get">
+              <div class="input-group">
+                <input type="text" name="search" id="search" class="form-control" placeholder="Search">
+                <span class="input-group-btn">
+                  <button type="submit" class="btn btn-default"><span class="glyphicon glyphicon-search"></span></button>
+                </span>
+              </div>
+            </form>
+          <% end %>
+          <% if url.include? ('adm_users') %>
+            <form class="navbar-form navbar-left" accept-charset="UTF-8" action="/adm_users" method="get">
+              <div class="input-group">
+                <input type="text" name="search" id="search" class="form-control" placeholder="Search">
+                <span class="input-group-btn">
+                  <button type="submit" class="btn btn-default"><span class="glyphicon glyphicon-search"></span></button>
+                </span>
+              </div>
+            </form>
+          <% end %>
+
+          <ul class="nav navbar-nav navbar-right">
+            <% if url.include? ('read') %>
+              <li class="dropdown">
+                <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false"><span class="glyphicon glyphicon-music"></span> Playlist<span class="caret"></span></a>
+                <ul class="dropdown-menu">
+                  <li><audio id="audio" loop="" tabindex="0" controls="" ><source src=""></audio></li>
+                  <ul id="playlist">
+                    <li class="active">
+                      <a href="http://rainymood.com/audio1110/0.m4a">Rainy Mood</a>
+                    </li>
+                    <li class="active">
+                      <a href="http://dl.dropbox.com/s/iav11l1two68fhe/TurningPage.mp3">Turning Page</a>
+                    </li>
+                    <li class="active">
+                      <a href="http://dl.dropbox.com/s/00z9nek9t1tx93o/CalmingMusic.mp3">Relaxing 1</a>
+                    </li>
+                    <li class="active">
+                      <a href="http://dl.dropbox.com/s/9rg4nwna3vhd91r/StudyMusic.mp3">Relaxing 2</a>
+                    </li>
+                    <li class="active">
+                      <a href="http://dl.dropbox.com/s/pp1z2y29rgdi06g/CelticFantasyMusic.mp3">Celtic Fantasy</a>
+                    </li>
+                    <li class="active">
+                      <a href="http://dl.dropbox.com/s/8saif0lynqudhey/Nuvole%20Bianche.mp3">Nuvole Bianche</a>
+                    </li>
+                    <li class="active">
+                      <a href="http://www.archive.org/download/CanonInD_261/CanoninD.mp3">Canon in D Pachabel</a>
+                    </li>
+                  </ul>
+                  <script type="text/javascript">
+                    var audio;
+                    var playlist;
+                    var tracks;
+                    var current;
+
+                    init();
+                    function init(){
+                      current = 0;
+                      audio = $('#audio');
+                      playlist = $('#playlist');
+                      tracks = playlist.find('li a');
+                      len = tracks.length - 1;
+                      audio[0].volume = .80;
+                      audio[0].play();
+                      playlist.find('a').click(function(e){
+                          e.preventDefault();
+                          link = $(this);
+                          current = link.parent().index();
+                          run(link, audio[0]);
+                      });
+                      audio[0].addEventListener('ended',function(e){
+                          current++;
+                          if(current == len){
+                              current = 0;
+                              link = playlist.find('a')[0];
+                          }else{
+                              link = playlist.find('a')[current];
+                          }
+                          run($(link),audio[0]);
+                      });
+                    }
+                    function run(link, player){
+                          player.src = link.attr('href');
+                          par = link.parent();
+                          par.addClass('active').siblings().removeClass('active');
+                          audio[0].load();
+                          audio[0].play();
+                    }
+                  </script>
+                </ul>
+              </li>
+            <% end %>
+            <li class="dropdown">
+              <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false"><span class="glyphicon glyphicon-user"></span> <%= current_user.name%> <%=current_user.last_name%> <span class="caret"></span></a>
+              <ul class="dropdown-menu">
+                <li><%= link_to('<span class="glyphicon glyphicon-log-out"></span> Log Out'.html_safe, destroy_user_session_path, :method => :delete) %></li>
+                <li><%= link_to('<span class="glyphicon glyphicon-cog"></span> Configurations'.html_safe, edit_user_registration_path) %></li>
+                <li><%= link_to('<span class="glyphicon glyphicon-check"></span> Give us feedback'.html_safe, feedback_path) %></li>
+              </ul>
+            </li>
+          </ul>
+        <% else %>
+          <li><%= link_to('<span class="glyphicon glyphicon-log-in"></span> Login'.html_safe, new_user_session_path) %></li>
+          <li class="navbar-right"><%= link_to('<span class="glyphicon glyphicon-user"></span> Sign up'.html_safe, new_registration_path(:user)) %></li>
+        <% end %>
+      </ul>
+    </div>
+
+  </div>
+</nav>
+
+<% if url.include? ('sign_in') %>
+    <div class="container sign_in">
+      <div class="col-md-5">
+        <div class="jumbotron">
+        <h2>Login</h2>
+          <%= form_for(resource, as: resource_name, url: session_path(resource_name)) do |f| %>
+            <div class="field">
+              <%= f.label :email %><br />
+              <%= f.email_field :email, autofocus: true, size: "30" %>
+            </div>
+            <br>
+            <div class="field">
+              <%= f.label :password %><br />
+              <%= f.password_field :password, autocomplete: "off", size: "30" %>
+            </div>
+            <br>
+            <% if devise_mapping.rememberable? -%>
+              <div class="field">
+                <%= f.check_box :remember_me %>
+                <%= f.label :remember_me %>
+              </div>
+            <% end -%>
+            <br>
+            <div class="actions">
+              <%= f.submit "Login", class: "btn btn-lg btn-success"%>
+            </div>
+          <% end %>
+          <br>
+          <a class="btn btn-sm btn-default" href="/users/sign_up">Sign Up</a><br />
+          
+        </div>
+      </div>
+      <div class="col-md-5">
+      </div>
+    </div> <!-- /container -->
+<% else %>
+  <%= yield %>
+<% end %>
+
+</body>
+</html>

@@ -1,0 +1,57 @@
+<style>
+table {
+  font-size: large;
+}
+</style>
+<div class="container">
+  <div class="col-md-7">
+    <div class="jumbotron">
+      <p class="lead" id="notice"><%= notice %></p>
+      <% if current_user.email != 'bookstreammailer@gmail.com' %>
+        <h2>Your Tags</h2>
+      <% else %>
+        <h2>All Tags of BookStream Users</h2>
+      <% end %>
+      <br>
+      <table style="width: 90%">
+        <thead>
+          <tr>
+            <th>Name</th>
+            <% if current_user.email == 'bookstreammailer@gmail.com' %>
+              <th>Owner</th>
+            <% end %>
+            <th colspan="3"></th>
+          </tr>
+        </thead>
+        <tbody>
+          <% @tags.each do |tag| %>
+            <tr>
+            <% if current_user.email != 'bookstreammailer@gmail.com' %>
+              <% if current_user.tags.include? tag %>
+                <td style="color:<%=tag.color%>"><span class="glyphicon glyphicon-tags"></span> <%= tag.name %></td>
+                <td><%= link_to '<span class="glyphicon glyphicon-pencil"></span>'.html_safe, edit_tag_path(tag), class: "btn btn-warning btn-sm", style: "margin-bottom:5px;margin-top:5px" %></td>
+                <td><%= link_to '<span class="glyphicon glyphicon-trash"></span>'.html_safe, tag, method: :delete, data: { confirm: 'Are you sure?' }, class: "btn btn-danger btn-sm", style: "margin-bottom:5px;margin-top:5px" %></td>
+              <% end %>
+            <% else %>
+              <td style="color:<%=tag.color%>"><span class="glyphicon glyphicon-tags"></span> <%= tag.name %></td>
+              <% if tag.user != nil %>
+                <td><%= tag.user.name %> <%= tag.user.last_name %></td>
+              <% else %>
+                <td>User does not exist anymore</td>  
+              <% end %>            
+              <td><%= link_to '<span class="glyphicon glyphicon-pencil"></span>'.html_safe, edit_tag_path(tag), class: "btn btn-warning btn-sm", style: "margin-bottom:5px;margin-top:5px" %></td>
+              <td><%= link_to '<span class="glyphicon glyphicon-trash"></span>'.html_safe, tag, method: :delete, data: { confirm: 'Are you sure?' }, class: "btn btn-danger btn-sm", style: "margin-bottom:5px;margin-top:5px" %></td>
+            <% end %>
+            </tr>     
+          <% end %>
+        </tbody>
+      </table>
+      <br>
+      <br>
+      <%= link_to 'New Tag', new_tag_path, class: "btn btn-success" %>
+      <br>
+      <br>
+      <%= link_to "Back", :back, class: "btn btn btn-default" %>
+    </div>
+  </div>
+</div> <!-- /container -->

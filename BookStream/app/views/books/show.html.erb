@@ -1,0 +1,149 @@
+<style>
+  form {
+    font-size: large;
+  }
+  #loadingDiv {
+    background: #ffffff;
+    color: #666666;
+    z-index: 5000;
+    text-align: center;
+  }
+</style>
+<script>
+  $('#load').click(function(){
+   $('html').html("<br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><br/><center><div id=loadingDiv><img src='http://www.animatedimages.org/data/media/53/animated-book-image-0018.gif' /><br/><p style='font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; font-size: 21px; font-weight: 200;'>Opening book, please wait...</p></div></center>"); 
+});
+</script>
+<div class="container">
+
+  <div class="col-md-7 col-sm-12">
+    <div class="jumbotron">
+      <p class="lead" id="notice"><%= notice %>
+      </p>
+
+      <p class="lead"  style="font-size:45px"><strong><%= @book.name %></strong>
+      </p>
+
+      <p class="lead" style="font-size:25px">by <strong><%= @book.author %></strong>
+      </p>
+
+      <p class="lead">
+        <% if @book.tags.size != 0 %>
+          <% @book.tags.each do |f| %>
+            <strong><a style="color:<%=f.color%>" href="/tags"><span class="glyphicon glyphicon-tag"></span> <%=f.name%> </a></strong>
+          <% end %>
+          <br/>
+        <% end %>
+      </p>
+
+      <p class="lead">
+        <%= link_to 'Read', read_path(@book,0), class: "btn btn-lg btn-success", id: "load" %>
+        <td><%= link_to '<span class="glyphicon glyphicon-send"></span> Send'.html_safe, email_book_path, data: { confirm: 'Are you sure?' }, class: "btn btn-lg btn-primary" %></td>
+      </p>
+
+      <p class="lead">
+        Current file format: <%= @book.document_file_name.split(".").last %>
+        <%= form_for @book, url: {action: "convert"} do |f| %>
+          <label class="lead">Convert and download file in:  </label>
+          <select type="text" name="book[format]" id="book_format">
+            <option value="pdf" class="lead">PDF</option>
+            <option value="epub" class="lead">EPUB</option>
+            <option value="mobi" class="lead">MOBI</option>
+          </select>
+          <button type="submit" class="btn btn-default"><span class="glyphicon glyphicon-transfer"></span> Convert</button>
+        <% end %>
+
+      <% if @book.access != 'Public' %>
+          <% if current_user.tags.size == 0 %>
+            <div class="alert alert-danger" role="alert">
+              <strong>You don't have Tags to asign!</strong> Try to <%= link_to('create', new_tag_path) %> Tags.
+            </div>
+          <% else %>
+            <% if @book.user != nil %>
+              <%= form_for @book, url: {action: "add_tag"} do |f| %>
+                <label class="lead">Select tag to add: </label>
+                <select type="text" name="book[tags]" id="book_tags">
+                  <% @book.user.tags.each do |f| %>
+                    <option class="lead"><%=f.name%></option>
+                  <% end %>
+                </select>
+                <button type="submit" class="btn btn-default"><span class="glyphicon glyphicon-tag"></span> Add tag</button>
+              <% end %>
+            <% end %>
+          <% end %>
+          <% if @book.tags.size != 0 %>
+            <%= form_for @book, url: {action: "remove_tag"} do |f| %>
+              <label class="lead">Select tag to remove: </label>
+              <select type="text" name="book[tags]" id="book_tags">
+                <% @book.tags.each do |f| %>
+                  <option class="lead"><%=f.name%></option>
+                <% end %>
+              </select>
+              <button type="submit" class="btn btn-default"><span class="glyphicon glyphicon-tag"></span> Remove tag</button>
+            <% end %>
+          <% end %>
+        </p>
+      <% end %>
+
+      <p class="lead">
+        <%= link_to '<span class="glyphicon glyphicon-pencil"></span> Edit'.html_safe, edit_book_path(@book), class: "btn btn-warning" %>
+        <%= link_to '<span class="glyphicon glyphicon-trash"></span> Delete'.html_safe, @book, method: :delete, data: { confirm: 'Are you sure?' }, class: "btn btn-danger" %>
+        <% if @book.document? %>
+          <%= link_to '<span class="glyphicon glyphicon-download-alt"></span> Download file'.html_safe, @book.document.url, class: "btn btn-default" %>
+        <%end%>
+        <%= link_to '<span class="glyphicon glyphicon-arrow-left"></span> Back'.html_safe, home_path , class: "btn btn-default"%>
+      </p>
+    </div>
+  </div>
+
+  <div class="col-md-5 col-sm-12">
+
+    <p class="lead">
+      <strong>Links:</strong>
+    </p>
+
+    <div class="row lead col-md-12 col-sm-12">
+      <!--  GOOGLE LINK  -->
+      <div class="col-md-offset-1 col-md-5 col-xs-6">
+        <center><a href=<%=@GoogleItem["previewLink"].to_str%> target="_blank"><img src="https://cdn4.iconfinder.com/data/icons/new-google-logo-2015/400/new-google-favicon-128.png"></a></center>
+        <% if @GoogleItem.has_key?("averageRating") %>
+          <center><p class="lead">
+          <% for i in 1..@Grating %>
+            &#x2605;
+          <%end%>
+          <% for i in 1..(5-@Grating) %>
+            &#x2606;
+          <%end%>
+          </p></center>
+        <%else%>
+          <center><p class="lead">No Rating</p></center>
+        <%end%>
+      </div>
+      <!--  IMDB LINK  -->
+      <div class="col-md-offset-1 col-md-5 col-xs-6">
+        <% if @ImbdItem["Response"] == "True"%>
+          <center><a href=<%=@link%> target="_blank"><img src="http://icons.iconarchive.com/icons/chrisbanks2/cold-fusion-hd/128/imdb-2-icon.png"></a></center>
+          <% if @ImbdItem.has_key?("imdbRating") %>
+           <center><p class="lead">
+            <% for i in 1..@Irating %>
+              &#x2605;
+            <%end%>
+            <% for i in 1..(5-@Irating) %>
+              &#x2606;
+            <%end%>
+            </p></center>
+          <%else%>
+            <center><p class="lead">No Rating</p></center>
+          <%end%>
+        <% end %>
+      </div>
+    </div>
+
+    <% if @GoogleItem.has_key?("description")%>
+      <h4>Google Books Description:</h4>
+      <p><%=@GoogleItem["description"]%></p>
+    <% end %>
+  </div>
+
+</div> <!-- /container -->
+

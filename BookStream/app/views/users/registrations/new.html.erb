@@ -1,0 +1,46 @@
+<div class="container">
+  <div class="col-md-5">
+    <div class="jumbotron">
+      <h2>Sign Up</h2>
+
+      <%= form_for(resource, as: resource_name, url: registration_path(resource_name)) do |f| %>
+        <%= devise_error_messages! %>
+        <div class="field">
+          <%= f.label :name, "Name*" %><br>
+          <%= f.text_field :name, autofocus: true, size: "30" %>
+        </div>
+      <br>
+        <div class="field">
+          <%= f.label :last_name, "Last Name*" %><br>
+          <%= f.text_field :last_name, autofocus: true, size: "30" %>
+        </div>
+      <br>
+        <div class="field">
+          <%= f.label :email, "Email*" %><br>
+          <%= f.email_field :email, autofocus: true, size: "30" %>
+        </div>
+      <br>
+        <div class="field">
+          <%= f.label :password, "Password*" %>
+          <% if @minimum_password_length %>
+          <em>(<%= @minimum_password_length %> characters minimum)</em>
+          <% end %><br>
+          <%= f.password_field :password, autocomplete: "off", size: "30" %>
+        </div>
+      <br>
+        <div class="field">
+          <%= f.label :password_confirmation, "Confirm Password" %><br>
+          <%= f.password_field :password_confirmation, autocomplete: "off", size: "30" %>
+        </div>
+      <br>
+        <div class="actions">
+          <%= f.submit class:"btn btn-lg btn-success" %>
+        </div>
+      <% end %>
+    </div>
+  </div>
+  <div class="col-md-5">
+  </div>
+</div> <!-- /container -->
+
+

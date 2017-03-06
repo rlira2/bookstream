@@ -1,0 +1,51 @@
+<div class="container">
+  <div class="col-md-7">
+    <div class="jumbotron">
+<h2>Edit <%= resource_name.to_s.humanize %></h2>
+
+<%= form_for(resource, as: resource_name, url: registration_path(resource_name), html: { method: :put }) do |f| %>
+  <%= devise_error_messages! %>
+
+<!--  <div class="field">
+    <%= f.label :email %><br />
+    <%= f.email_field :email, autofocus: true %>
+  </div> -->
+
+  <% if devise_mapping.confirmable? && resource.pending_reconfirmation? %>
+    <div>Currently waiting confirmation for: <%= resource.unconfirmed_email %></div>
+  <% end %>
+
+  <div class="field">
+    <%= f.label :password %> <br><i>(leave blank if you don't want to change it)</i><br>
+    <%= f.password_field :password, autocomplete: "off" %>
+  </div>
+<br>
+  <div class="field">
+    <%= f.label :password_confirmation %><br />
+    <%= f.password_field :password_confirmation, autocomplete: "off" %>
+  </div>
+<br>
+  <div class="field">
+    <%= f.label :current_password %> <br><i>(we need your current password to confirm your changes)</i><br>
+    <%= f.password_field :current_password, autocomplete: "off" %>
+  </div>
+<br>
+  <div class="actions">
+    <%= f.submit class: "btn btn-lg btn-success"%>
+  </div>
+<% end %>
+
+<h3>Cancel my account</h3>
+
+<p>Unhappy?
+<form class="button_to" action="/delete_user" method="get">
+  <input type="hidden" name="id" id="id" value=<%= current_user.id.to_s %> />
+  <input data-confirm="Are you sure?" type="submit" class="btn btn-danger" value="Cancel my account" />
+</form></p>
+
+<%= link_to "Back", :back, class: "btn btn btn-default" %>
+</div>
+  </div>
+  <div class="col-md-5">
+  </div>
+</div> <!-- /container -->

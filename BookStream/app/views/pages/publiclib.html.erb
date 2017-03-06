@@ -1,0 +1,144 @@
+<style>
+.row {
+  display: -webkit-box;
+  display: -webkit-flex;
+  display: -ms-flexbox;
+  display:         flex;
+  flex-wrap: wrap;
+}
+.row > [class*='col-'] {
+  display: flex;
+  flex-direction: column;
+}
+img {
+  margin-bottom: -15px;
+  width: 304px;
+  height: 365px;
+  max-width: 100%;
+  max-height: 100%;
+  display: block;
+}
+
+p.ex {
+  width: 330px;
+  padding-left: 28px;
+}
+img.bookdefault {
+  width: 100%;
+  height: 436px;
+  max-width: 100%;
+  max-height: 100%;
+  margin: 0px -20px -15px -20px;
+  display: block;
+}
+</style>
+
+<div class="jumbotron">
+  <div class="container">
+    <div class="col-md-8">
+      <h1>BookStream</h1>
+      <p>Hi <big><strong><%= current_user.name %></strong></big>, this is our public library!</p>
+    </div>
+    <div class="col-md-4">
+      <%= link_to 'My Library', home_path, class: "btn btn-lg btn-danger pull-right" %>
+      <br></br><br></br>
+      <a href='/books/new' button type="button" class="btn btn-lg btn-primary pull-right"><span class="glyphicon glyphicon-cloud-upload"></span> Upload New Book</button></a>
+    </div>
+  </div>
+</div>
+
+<% if defined?(@search)
+  books_searched=[]
+
+  if Book.all.size != 0
+    Book.all.each do |b|
+      if b.access == "Public"
+        if b.name.downcase.include? @search.downcase
+          books_searched.insert(-1, b)
+        end
+        if b.author.downcase.include? @search.downcase
+          books_searched.insert(-1, b)
+        end
+        if b.tags.size != 0
+          b.tags.each do |f|
+            if f.name.downcase.include? @search.downcase
+              books_searched.insert(-1, b)
+            end
+          end
+        end
+        if b.description.downcase.include? @search.downcase
+          books_searched.insert(-1, b)
+        end
+        if b.image_file_name != nil
+          if b.image_file_name.downcase.include? @search.downcase
+            books_searched.insert(-1, b)
+          end
+        end
+      end
+    end
+  end
+
+  if Book.all.size == 0 %>
+    <div class="alert alert-danger" role="alert">
+       <strong>You don't have books!</strong> Try to <%= link_to('upload', new_book_path) %> a new book.
+    </div>
+    <br>
+  <% else %>
+    <div class="container">
+      <% if books_searched.uniq.size == 0 %>
+          <div class="alert alert-danger" role="alert">
+           <strong>No results for your search.</strong>
+          </div>
+      <% else %>
+        <div class="row">
+          <% books_searched.uniq.each do |f| %>
+            <% if f.access == "Public" %>
+                <div class="col-md-3 col-xs-12">
+                  <center><h3 style="margin-bottom:-8px"><%=f.name%> </h3></center>
+                  <center><h6>by <%=f.author%> <br/></h6></center>
+                  <% if f.image_file_name != nil %>
+                    <center><%= image_tag(f.image, size: "304x436", :alt => "rss feed") %></center>
+                  <% else %>
+                  <center><img class="bookdefault" src="http://icons.iconarchive.com/icons/paomedia/small-n-flat/1024/book-bookmark-icon.png"></center>
+                  <% end %>
+                  <br>
+                  <p class="ex" align="justify"> <%=f.description%> <br/> </p>
+                  <center><p><big><td><%= link_to '<span class="glyphicon glyphicon-plus"></span> Add to my library'.html_safe , f, method: :add_book, class: "btn btn-success", style: "margin-bottom:10px" %></td></big></p></center>
+              </div>
+            <% end %>
+          <%end%>
+        </div>
+      <%end%>
+    </div>
+  <%end%>
+
+<% else %>
+
+<% if Book.all.size == 0 %>
+  <div class="alert alert-danger" role="alert">
+     <strong>You don't have books!</strong> Try to <%= link_to('upload', new_book_path)  %> a new book.
+   </div>
+  <br>
+<% else %>
+    <div class="container">
+      <div class="row">
+        <% Book.all.each do |f| %>
+          <% if f.access == "Public" %>
+            <div class="col-md-3 col-xs-12">
+              <center><h3 style="margin-bottom:-8px"><%=f.name%> </h3></center>
+              <center><h6>by <%=f.author%> <br/></h6></center>
+              <% if f.image_file_name != nil %>
+                  <center><%= image_tag(f.image, size: "304x436", :alt => "rss feed") %></center>
+              <% else %>
+                <center><img class="bookdefault" src="http://icons.iconarchive.com/icons/paomedia/small-n-flat/1024/book-bookmark-icon.png"></center>
+              <%end%>
+              <br>
+              <p class="ex" align="justify"> <%=f.description%> <br/> </p>
+              <center><p><big><td><%= link_to '<span class="glyphicon glyphicon-plus"></span> Add to my library'.html_safe , f, method: :add_book, class: "btn btn-success", style: "margin-bottom:10px" %></td></big></p></center>
+            </div>
+          <% end %>
+        <% end %>
+       </div>
+    </div>
+<%end%>
+<%end%>

@@ -1,0 +1,142 @@
+/*
+ * This is a manifest file that'll be compiled into application.css, which will include all the files
+ * listed below.
+ *
+ * Any CSS and SCSS file within this directory, lib/assets/stylesheets, vendor/assets/stylesheets,
+ * or any plugin's vendor/assets/stylesheets directory can be referenced here using a relative path.
+ *
+ * You're free to add application-wide styles to this file and they'll appear at the bottom of the
+ * compiled file so the styles you add here take precedence over styles defined in any styles
+ * defined in the other CSS/SCSS files in this directory. It is generally better to create a new
+ * file per style scope.
+ */
+@import "bootstrap-sprockets";
+@import "bootstrap";
+
+body {
+    padding-top: 70px;
+} 
+
+.neighborhood-guides {
+    background-color: #FFFFFF;
+}
+
+.thumbnail{        
+    width: 350px;
+    height: 200px;
+    overflow: auto;
+    justify-content: center;
+}
+
+#book-read {
+    font-family: 'Helvetica Neue',Helvetica,Arial,sans-serif;
+    line-height: 1.2;
+    font-size: 15px;
+    overflow: hidden;
+    clear: left;
+    padding-left: 4rem;
+    white-space: pre-wrap;
+    word-break: normal;
+    color: black;
+    background-color: rgba(255, 255, 255, 0.94);
+    border: medium none antiquewhite;
+    font-weight: 300;
+}
+
+.booktop {
+    color: white;
+    background-color: rgba(0, 0, 0, 0.51);
+    border-radius: 25px;
+    margin-bottom: 5px;
+    padding-bottom: 5px;
+    padding-top: 10px;
+    margin-top: 5px;
+}
+
+#reader {
+    background-color: bisque;
+    margin-top: -20px;
+    padding: 0px;
+    border: 0px;
+    margin-right: 0px;
+    width: 100%;
+    margin-left: 0px;
+    background-image: url('http://images.designtrends.com/wp-content/uploads/2016/04/12113406/Wood-Pattern-Background.jpg');
+    /*background-image: url('http://www.intrawallpaper.com/static/images/Light-Wood-Background-Wallpaper_JHG6qot.jpg');*/
+    background-attachment: fixed;
+    background-size: 100%;
+}
+
+@media (max-width: 1000px) {
+    #book-read {
+        padding-left: 7px;
+        margin-top: 0px;
+        margin-bottom: 0px;
+        font-size: 13px;
+        text-align: justify;
+
+    }
+    #reader {
+        background-image: url("http://www.bartelme.at/material/shelf/wide/Shelf-saturated.png");
+        width: 100%;
+        padding: 10px;
+    }
+
+    .navbar-fixed-top, .navbar-fixed-bottom, .navbar-static-top {
+      margin-left: 0;
+      margin-right: 0;
+      margin-bottom:0;
+    }
+}
+
+.field_with_errors {
+  color: #a94442;
+  display: inline;
+}
+
+#error_explanation h2 {
+    font-size: 1.12em;
+    margin-top: 1.33em;
+    margin-bottom: 1.33em;
+    margin-left: 1.33em;
+}
+
+#error_explanation {
+    background-color: #f2dede;
+    border-color: #ebccd1;
+    color: #a94442;
+    padding: 15px;
+    margin-bottom: 20px;
+    border: 1px solid #ebccd1;
+    border-radius: 4px;
+    display: block;
+}
+
+#adm_users .user {
+  border: 2px solid #ffffff;
+  padding: 10px 10px 20px 10px;
+  transition: all 0.4s linear;
+  margin-bottom: 30px;
+}
+
+#adm_users .user:hover {
+  background: #E8E8E8;
+  border-color: #989898;
+}
+
+#adm_users .row {
+  display: -webkit-box;
+  display: -webkit-flex;
+  display: -ms-flexbox;
+  display:         flex;
+  flex-wrap: wrap;
+}
+
+#adm_users .row > [class*='col-'] {
+  display: flex;
+  flex-direction: column;
+}
+
+.edit_user .new_user .sign_in{
+    font-size: medium;
+}

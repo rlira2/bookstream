@@ -1,0 +1,128 @@
+<div class="jumbotron">
+  <div class="container">
+    <div class="col-md-8">
+      <h1>BookStream</h1>
+      <% if current_user.email != 'bookstreammailer@gmail.com' %>
+        <p>Hi <big><strong><%= current_user.name %></strong></big>, this is your library!</p>
+      <% else %>
+        <p>Hi <big><strong>BookStream Administrator</strong></big> (ID #<%= current_user.id %>), here are all the books in the DB.</p>
+      <% end %>
+    </div>
+    <div class="col-md-4">
+      <%= link_to 'Public Library', publiclib_path, class: "btn btn-lg btn-danger pull-right" %>
+      <br></br><br></br>
+      <a href='/books/new' button type="button" class="btn btn-lg btn-primary pull-right"><span class="glyphicon glyphicon-cloud-upload"></span> Upload New Book</button></a>
+    </div>
+  </div>
+</div>
+
+<% if defined?(@search)
+  users_searched = []
+  if User.all.size != 0
+    User.all.each do |b|
+      if ('User #' + b.id.to_s).downcase.include? @search.downcase
+        users_searched.insert(-1, b)
+      end
+      if b.name.downcase.include? @search.downcase
+        users_searched.insert(-1, b)
+      end
+      if b.last_name.downcase.include? @search.downcase
+        users_searched.insert(-1, b)
+      end
+      if b.tags.size != 0
+        b.tags.each do |f|
+          if f.name.downcase.include? @search.downcase
+            users_searched.insert(-1, b)
+          end
+        end
+      end
+      if b.email.downcase.include? @search.downcase
+        users_searched.insert(-1, b)
+      end
+    end
+  end
+  if User.all.size == 0 %>
+    <div class="alert alert-danger" role="alert">
+      <strong>No users found!</strong> Try to <%= link_to "register", new_registration_path(:user) %> a new user.
+    </div>
+    <br>
+  <% else %>
+    <div id="adm_users" class="container">
+      <% if users_searched.uniq.size == 0 %>
+        <div class="alert alert-danger" role="alert">
+          <strong>No results for your search.</strong>
+        </div>
+      <% else %>
+        <div class="row">
+          <% users_searched.uniq.each do |f| %>
+            <div class="col-md-4">
+              <div class="user">
+                <center>
+                <h1><span class="glyphicon glyphicon-user"></span></h1>
+                <h2><%=f.name%> <%=f.last_name%></h2>
+                <h4><%=f.email%><br/></h4>
+                <h5>User #<%=f.id%><br/></h5>
+                </center>
+                <br>
+                <center style="white-space:nowrap">
+                  <div class="col-md-offset-4 col-md-2">
+                    <%= link_to '<span class="glyphicon glyphicon-pencil"></span>'.html_safe, edit_user_registration_path(f), class: "btn btn-warning" %>
+                  </div>
+                  <div class="col-md-2">
+                    <form action="/delete_user" method="get">
+                      <input type="hidden" name="id" id="id" value=<%= f.id.to_s %>></input>
+                      <button type="submit" data-confirm="Are you sure?" class="btn btn-danger" value=""><span class="glyphicon glyphicon-trash"></span></button>
+                    </form>
+                  </div>
+                </center>
+              </div>
+            </div>
+          <%end%>
+        </div>
+      <%end%>
+    </div>
+  <% end %>
+<% else %>
+  <% if User.all.size == 0 %>
+    <div class="alert alert-danger" role="alert">
+       <strong>No users found!</strong> Try to <%= link_to "register", new_registration_path(:user) %> a new user.
+    <br>
+  <% else %>
+    <div id="adm_users" class="container">
+      <div class="row">
+        <% User.all.each do |f| %>
+          <div class="col-md-4">
+            <div class="user">
+              <center>
+              <h1><span class="glyphicon glyphicon-user"></span></h1>
+              <h2><%=f.name%> <%=f.last_name%></h2>
+              <h4><%=f.email%><br/></h4>
+              <h5>User #<%=f.id%><br/></h5>
+              </center>
+              <br>
+              <center style="white-space:nowrap">
+                <div class="col-md-offset-4 col-md-2">
+                  <%= link_to '<span class="glyphicon glyphicon-pencil"></span>'.html_safe, edit_user_registration_path(f), class: "btn btn-warning" %>
+                </div>
+                <div class="col-md-2">
+                  <form action="/delete_user" method="get">
+                    <input type="hidden" name="id" id="id" value=<%= f.id.to_s %>></input>
+                    <button type="submit" data-confirm="Are you sure?" class="btn btn-danger" value=""<% if f.email == current_user.email %> disabled <% end %>><span class="glyphicon glyphicon-trash"></span></button>
+                  </form>
+                </div>
+              </center>
+            </div>
+          </div>
+        <% end %>
+      </div>
+    </div>
+  <% end %>
+<% end %>
+
+<div class="jumbotron">
+  <div class="container">
+    <center><h2>Manage your tags</h2></center>
+    <a href='/tags/new' button type="button" class="btn btn-lg btn-danger pull-left"><span class="glyphicon glyphicon-tags"></span>  Add tags</a>
+    <a href='/tags' button type="button" class="btn btn-lg btn-primary pull-right"><span class="glyphicon glyphicon-pencil"></span> Edit tags</a>
+  </div>
+</div>

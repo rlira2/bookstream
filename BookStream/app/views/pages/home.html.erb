@@ -1,0 +1,289 @@
+<style>
+.row {
+  display: -webkit-box;
+  display: -webkit-flex;
+  display: -ms-flexbox;
+  display:         flex;
+  flex-wrap: wrap;
+}
+.row > [class*='col-'] {
+  display: flex;
+  flex-direction: column;
+}
+img {
+  margin-bottom: -15px;
+  width: 304px;
+  height: 365px;
+  max-width: 100%;
+  max-height: 100%;
+  display: block;
+}
+
+p.ex {
+  width: 330px;
+  padding-left: 28px;
+}
+img.bookdefault {
+  width: 100%;
+  height: 436px;
+  max-width: 100%;
+  max-height: 100%;
+  margin: 0px -20px -15px -20px;
+  display: block;
+}
+
+</style>
+
+<div class="jumbotron">
+  <div class="container">
+    <div class="col-md-8">
+      <h1>BookStream</h1>
+      <% if current_user.email != 'bookstreammailer@gmail.com' %>
+        <p>Hi <big><strong><%= current_user.name %></strong></big>, this is your library!</p>
+      <% else %>
+        <p>Hi <big><strong>BookStream Administrator</strong></big> (ID #<%= current_user.id %>), here are all the books in the DB.</p>
+      <% end %>
+    </div>
+    <div class="col-md-4">
+      <%= link_to 'Public Library', publiclib_path, class: "btn btn-lg btn-danger pull-right" %>
+      <br></br><br></br>
+      <a href='/books/new' button type="button" class="btn btn-lg btn-primary pull-right"><span class="glyphicon glyphicon-cloud-upload"></span> Upload New Book</button></a>
+    </div>
+  </div>
+</div>
+
+<% if current_user.email != 'bookstreammailer@gmail.com'
+  if defined?(@search)
+    books_searched=[]
+    if current_user.books.size != 0
+      current_user.books.each do |b|
+        if b.name.downcase.include? @search.downcase
+          books_searched.insert(-1, b)
+        end
+        if b.author.downcase.include? @search.downcase
+          books_searched.insert(-1, b)
+        end
+        if b.tags.size != 0
+          b.tags.each do |f|
+            if f.name.downcase.include? @search.downcase
+              books_searched.insert(-1, b)
+            end
+          end
+        end
+        if b.description.downcase.include? @search.downcase
+          books_searched.insert(-1, b)
+        end
+        if b.document_file_name.downcase.include? @search.downcase
+          books_searched.insert(-1, b)
+        end
+        if b.image_file_name != nil
+          if b.image_file_name.downcase.include? @search.downcase
+            books_searched.insert(-1, b)
+          end
+        end
+      end
+    end
+    if current_user.books.size == 0 %>
+      <div class="alert alert-danger" role="alert">
+         <strong>You don't have books!</strong> Try to <%= link_to('upload', new_book_path) %> a new book.
+      </div>
+      <br>
+    <% else %>
+      <div class="container">
+        <% if books_searched.uniq.size == 0 %>
+          <div class="alert alert-danger" role="alert">
+           <strong>No results for your search.</strong> You might find it in the <%= link_to('Public Library', publiclib_path) %>.
+          </div>
+        <% else %>
+          <div class="row">
+            <% books_searched.uniq.each do |f| %>
+              <div class="col-md-3 col-xs-12">
+                <center><h3 style="margin-bottom:-8px"><%=f.name%> </h3>
+                <h6>by <%=f.author%> <br/></h6>
+                <% if f.tags.size != 0 %>
+                <% f.tags.each do |f| %>
+                  <a style="color:<%=f.color%>" href="/tags"><span class="glyphicon glyphicon-tag"></span> <%=f.name%> </a>
+                <% end %> <br/>
+              <% end %></center>
+                <% if f.image_file_name != nil %>
+                  <center class="book_image"><%= image_tag(f.image, size: "304x436", :alt => "rss feed") %></center>
+                <% else %>
+                  <center class="book_image"><img class="bookdefault" src="http://icons.iconarchive.com/icons/paomedia/small-n-flat/1024/book-bookmark-icon.png"></center>
+                <% end %>
+                <br>
+                <p class="ex" align="justify"> <%=f.description%> <br/> </p>
+                <center><p><big><td><%= link_to '<span class="glyphicon glyphicon-book"></span> Show Book'.html_safe , f , class: "btn btn-success", style: "margin-bottom:10px" %></td></big></p></center>
+              </div>
+            <% end %>
+          </div>
+        <% end %>
+      </div>
+    <%end%>
+  <% else %>
+    <% if current_user.books.size == 0 %>
+      <div class="alert alert-danger" role="alert">
+        <strong>You don't have books!</strong> Try to <%= link_to('upload', new_book_path)  %> a new book.
+      </div>
+      <br>
+    <% else %>
+      <div class="container">
+        <div class="row">
+          <% current_user.books.each do |f| %>
+            <div class="col-md-3 col-xs-12">
+              <center><h3 style="margin-bottom:-8px"><%=f.name%> </h3>
+              <h6>by <%=f.author%> <br/></h6>
+              <% if f.tags.size != 0 %>
+                <% f.tags.each do |f| %>
+                  <a style="color:<%=f.color%>" href="/tags"><span class="glyphicon glyphicon-tag"></span> <%=f.name%> </a>
+                <% end %> <br/>
+              <% end %></center>
+              <% if f.image_file_name != nil %>
+                <center class="book_image"><%= image_tag(f.image, size: "304x436", :alt => "rss feed") %></center>
+              <% else %>
+                <center class="book_image"><img class="bookdefault" src="http://icons.iconarchive.com/icons/paomedia/small-n-flat/1024/book-bookmark-icon.png"></center>
+              <%end%>
+              <br>
+              <p class="ex" align="justify"> <%=f.description%> <br/> </p>
+              <center><p><big><td><%= link_to '<span class="glyphicon glyphicon-book"></span> Show Book'.html_safe , f , class: "btn btn-success", style: "margin-bottom:10px" %></td></big></p></center>
+            </div>
+          <% end %>
+        </div>
+      </div>
+    <%end%>
+  <% end %>
+<% else %>
+  <% if defined?(@search)
+    books_searched=[]
+    if Book.all.size != 0
+      Book.all.each do |b|
+        if b.name.downcase.include? @search.downcase
+          books_searched.insert(-1, b)
+        end
+        if b.author.downcase.include? @search.downcase
+          books_searched.insert(-1, b)
+        end
+        if b.tags.size != 0
+          b.tags.each do |f|
+            if f.name.downcase.include? @search.downcase
+              books_searched.insert(-1, b)
+            end
+          end
+        end
+        if b.description.downcase.include? @search.downcase
+          books_searched.insert(-1, b)
+        end
+        if b.document_file_name.downcase.include? @search.downcase
+          books_searched.insert(-1, b)
+        end
+        if b.image_file_name != nil
+          if b.image_file_name.downcase.include? @search.downcase
+            books_searched.insert(-1, b)
+          end
+        end
+        if ('user #' + b.user_id.to_s).downcase.include? @search.downcase
+          books_searched.insert(-1, b)
+        end
+        if ('book #' + b.id.to_s).downcase.include? @search.downcase
+          books_searched.insert(-1, b)
+        end
+        if b.access.downcase.include? @search.downcase
+          books_searched.insert(-1, b)
+        end
+        if b.user != nil
+          if b.user.name.downcase.include? @search.downcase
+            books_searched.insert(-1, b)
+          end
+          if b.user.last_name.downcase.include? @search.downcase
+            books_searched.insert(-1, b)
+          end
+          if b.user.email.downcase.include? @search.downcase
+            books_searched.insert(-1, b)
+          end
+        end
+      end
+    end
+    if Book.all.size == 0 %>
+      <div class="alert alert-danger" role="alert">
+        <strong>You don't have books!</strong> Try to <%= link_to('upload', new_book_path) %> a new book.
+      </div>
+      <br>
+    <% else %>
+      <div class="container">
+        <% if books_searched.uniq.size == 0 %>
+          <div class="alert alert-danger" role="alert">
+            <strong>No results for your search.</strong>
+          </div>
+        <% else %>
+          <div class="row">
+            <% books_searched.uniq.each do |f| %>
+              <div class="col-md-3 col-xs-12">
+                <center><h3 style="margin-bottom:-8px"><%=f.name%> </h3>
+                <h6>by <%=f.author%> <br/></h6>
+                <% if f.tags.size != 0 %>
+                <% f.tags.each do |f| %>
+                  <a style="color:<%=f.color%>" href="/tags"><span class="glyphicon glyphicon-tag"></span> <%=f.name%> </a>
+                <% end %> <br/>
+              <% end %>
+                <%= f.access %> book, #<%= f.id %> (<%= f.document_file_name.split(".").last %>)<br/>
+                <% if f.user != nil %>
+                  User #<%= f.user_id %>, <%= f.user.name %> <%= f.user.last_name %>
+                <% end %></center>
+                <% if f.image_file_name != nil %>
+                  <center class="book_image"><%= image_tag(f.image, size: "304x436", :alt => "rss feed") %></center>
+                <% else %>
+                  <center class="book_image"><img class="bookdefault" src="http://icons.iconarchive.com/icons/paomedia/small-n-flat/1024/book-bookmark-icon.png"></center>
+                <% end %>
+                <br>
+                <p class="ex" align="justify"> <%=f.description%> </p>
+                <center><%= link_to '<span class="glyphicon glyphicon-book"></span> Show Book'.html_safe , f , class: "btn btn-success", style: "margin-bottom:10px" %> <%= link_to '<span class="glyphicon glyphicon-pencil"></span>'.html_safe, edit_book_path(f), class: "btn btn-warning", style: "margin-bottom:10px" %> <%= link_to '<span class="glyphicon glyphicon-trash"></span>'.html_safe, f, method: :delete, class: "btn btn-danger", style: "margin-bottom:10px" %></center>
+              </div>
+            <%end%>
+          </div>
+        <%end%>
+      </div>
+    <% end %>
+  <% else %>
+    <% if Book.all.size == 0 %>
+      <div class="alert alert-danger" role="alert">
+         <strong>You don't have books!</strong> Try to <%= link_to('upload', new_book_path)  %> a new book.
+       </div>
+      <br>
+    <% else %>
+      <div class="container">
+        <div class="row">
+          <% Book.all.each do |f| %>
+            <div class="col-md-3 col-xs-12">
+              <center><h3 style="margin-bottom:-8px"><%=f.name%> </h3></center>
+              <center><h6>by <%=f.author%> <br/></h6>
+              <% if f.tags.size != 0 %>
+                <% f.tags.each do |f| %>
+                  <a style="color:<%=f.color%>" href="/tags"><span class="glyphicon glyphicon-tag"></span> <%=f.name%> </a>
+                <% end %> <br/>
+              <% end %>
+              <%= f.access %> book, #<%= f.id %> (<%= f.document_file_name.split(".").last %>)<br/>
+              <% if f.user != nil %>
+                User #<%= f.user_id %>, <%= f.user.name %> <%= f.user.last_name %>
+              <% end %></center>
+              <% if f.image_file_name != nil %>
+                <center class="book_image"><%= image_tag(f.image, size: "304x436", :alt => "rss feed") %></center>
+              <% else %>
+                <center class="book_image"><img class="bookdefault" src="http://icons.iconarchive.com/icons/paomedia/small-n-flat/1024/book-bookmark-icon.png" ></center>
+              <%end%>
+              <br>
+              <p class="ex" align="justify"> <%=f.description%> </p>
+              <center><%= link_to '<span class="glyphicon glyphicon-book"></span> Show Book'.html_safe , f , class: "btn btn-success", style: "margin-bottom:10px" %> <%= link_to '<span class="glyphicon glyphicon-pencil"></span>'.html_safe, edit_book_path(f), class: "btn btn-warning", style: "margin-bottom:10px" %> <%= link_to '<span class="glyphicon glyphicon-trash"></span>'.html_safe, f, method: :delete, class: "btn btn-danger", style: "margin-bottom:10px" %></center>
+            </div>
+          <% end %>
+        </div>
+      </div>
+    <% end %>
+  <% end %>
+<% end %>
+
+<div class="jumbotron">
+  <div class="container">
+    <center><h2>Manage your tags</h2></center>
+    <a href='/tags/new' button type="button" class="btn btn-lg btn-danger pull-left"><span class="glyphicon glyphicon-tags"></span>  Add tags</a>
+    <a href='/tags' button type="button" class="btn btn-lg btn-primary pull-right"><span class="glyphicon glyphicon-pencil"></span> Edit tags</a>
+  </div>
+</div>
